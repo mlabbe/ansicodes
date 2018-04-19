@@ -295,12 +295,12 @@ AC_EnableANSICodes(void);
 #  define AC__WIN32
 #endif
 
+
+
 #ifdef IMPLEMENT_ANSICODES
 
-#ifdef AC__WIN32
 #define WIN32_LEAN_AND_MEAN
-#include<windows.h>
-#endif
+#include<Windows.h>
 
 void
 AC_EnableANSICodes(void) {
@@ -311,8 +311,7 @@ AC_EnableANSICodes(void) {
     GetConsoleMode(hStdout, &mode);
     mode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
     mode |= DISABLE_NEWLINE_AUTO_RETURN;
-    BOOL result = SetConsoleMode(hStdout, mode);
-    assert(result);
+    SetConsoleMode(hStdout, mode);
 #endif
 }
 #endif
