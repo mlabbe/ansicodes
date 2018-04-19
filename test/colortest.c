@@ -1,15 +1,17 @@
 #include<stdio.h>
 
+#define IMPLEMENT_ANSICODES
 #include "../ansicodes.h"
 
 #define REDYELLOW AC_FG24(255,0,0) AC_BG24(255,255,0)
 
 int main(void)  {
+    AC_EnableANSICodes();
     printf(AC_CLS);
 
     printf(AC_POS(10,10));
 
-    printf(REDYELLOW ansistrln("hello world 24bpp"));
+    printf(ansistrln(REDYELLOW "hello world 24bpp"));
 
 
     printf(AC_FG8(252) ansistrln("grey"));

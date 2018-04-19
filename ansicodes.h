@@ -4,6 +4,15 @@
 /*
   Ansicodes -- a modern ansi code subset as pure C macros.
 
+   ****
+   You must
+
+     #define IMPLEMENT_ANSICODES
+
+   in exactly one C or C++ file before including ansicodes.h.
+   ****
+
+
   LICENSE is public domain/MIT.
 
   Things this does:
@@ -31,7 +40,7 @@
 
 // Helpers that output a string, then reset ANSI state
 //
-// usage: printf(AC_RED ansistrln("Hello world"));
+// usage: printf(ansistrln(AC_RED "Hello world"));
 #define ansistr(s)   s AC_RESETALL
 #define ansistrln(s) s AC_RESETALL "\n"
 
@@ -265,5 +274,47 @@
 // clear screen and bring cursor to 0,0
 #define AC_CLS      "\x1b[2J" AC_HOME
 
+//
+// Function calls
+//
+
+#ifdef AC_CORE_STATIC
+#  define ACDEF static
+#else
+#  define ACDEF extern
+#endif
+
+// Enable ansicodes on Windows consoles.
+// Idempotent on Windows, noop on other OSes.
+// Works on Windows as of Fall Creators Update (1709)
+ACDEF void
+AC_EnableANSICodes(void);
+
+
+#if defined(WIN32) || defined(_WIN32)
+#  define AC__WIN32
+#endif
+
+#ifdef IMPLEMENT_ANSICODES
+
+#ifdef AC__WIN32
+#define WIN32_LEAN_AND_MEAN
+#include<windows.h>
+#endif
+
+void
+AC_EnableANSICodes(void) {
+#ifdef AC__WIN32
+    HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    DWORD mode;
+    GetConsoleMode(hStdout, &mode);
+    mode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+    mode |= DISABLE_NEWLINE_AUTO_RETURN;
+    BOOL result = SetConsoleMode(hStdout, mode);
+    assert(result);
+#endif
+}
+#endif
 
 #endif
